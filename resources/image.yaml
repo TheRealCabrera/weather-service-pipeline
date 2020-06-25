@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: image
+  namespace: weather-service
+spec:
+  params:
+    - name: url
+      value: docker.io/racabre2/weather-service:latest
+  type: image

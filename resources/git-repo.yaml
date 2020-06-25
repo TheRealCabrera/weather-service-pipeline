@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: git-repo
+  namespace: weather-service
+spec:
+  params:
+    - name: url
+      value: 'http://github.com/therealcabrera/weather-service.git'
+  type: git

@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: pull-deploy-image
+  namespace: weather-service
+spec:
+  workspaces:
+    - name: git-source
+      description: The git repo
+  params:
+    - name: pathToYamlFile
+      description: The path to the yaml file to deploy within the git source
+    - name: imageUrl
+      description: Image name including repo
+    - name: imageTag
+      description: Image Tag
+      default: "latest"
+    - name: imageDigest
+      description: Digest of image to be used.
+  steps:
+    - args:
+        - '-i'
+        - '-e'
+        - 's;__IMAGE__;$(inputs.params.imageUrl):$(inputs.params.imageTag);g'
+        - /workspace/git-source/$(inputs.params.pathToYamlFile)
+      command:
+        - sed
+      image: alpine
+      name: update-yaml
+      resources: {}
+    - args:
+        - apply
+        - '-f'
+        - /workspace/git-source/$(inputs.params.pathToYamlFile)
+      command:
+        - kubectl
+      image: lachlanevenson/k8s-kubectl
+      name: run-kubectl
+      resources: ""
